@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Dodging Demo</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-static {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .btn-static:hover {
+      background-color: #45a049;
+    }
+
+    .btn-dodge {
+      position: absolute;
+      background-color: #f44336;
+      color: white;
+      transition: all 0.15s ease-out;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      max-width: 80%;
+    }
+
+    .modal-content p {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .close-btn {
+      background-color: #2196F3;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Kupal kaba jude?</h1>
+
+  <div class="container">
+    <button id="staticBtn" class="btn btn-static">Dati</button>
+    <button id="dodgeBtn" class="btn btn-dodge" style="top: 50%; left: 55%;">Diko</button>
+  </div>
+
+  <!-- Pop-up Modal -->
+  <div id="messageModal" class="modal-overlay">
+    <div class="modal-content">
+      <p>Bitaw dong hulama ko 20k bi pang gas lang please</p>
+      <button id="closeBtn" class="close-btn">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const dodgeBtn = document.getElementById('dodgeBtn');
+    const staticBtn = document.getElementById('staticBtn');
+    const messageModal = document.getElementById('messageModal');
+    const closeBtn = document.getElementById('closeBtn');
+
+    // Dodging logic
+    function moveButton() {
+      const padding = 100;
+      const maxX = window.innerWidth - dodgeBtn.offsetWidth - padding;
+      const maxY = window.innerHeight - dodgeBtn.offsetHeight - padding;
+
+      const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+      const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+      dodgeBtn.style.left = `${randomX}px`;
+      dodgeBtn.style.top = `${randomY}px`;
+    }
+
+    dodgeBtn.addEventListener('mouseover', moveButton);
+    dodgeBtn.addEventListener('click', moveButton);
+
+    // Static button click handler to show message
+    staticBtn.addEventListener('click', () => {
+      messageModal.style.display = 'flex';
+    });
+
+    // Close modal handler
+    closeBtn.addEventListener('click', () => {
+      messageModal.style.display = 'none';
+    });
+  </script>
+
+</body>
+</html>
+
