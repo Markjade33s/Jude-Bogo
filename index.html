@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,31 +6,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interactive Dodging Demo</title>
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+
+    body {
       height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
       font-family: Arial, sans-serif;
       background-color: #f0f2f5;
       overflow: hidden;
     }
 
-    .container {
-      display: flex;
-      gap: 20px;
+    /* TAAS: Safe zone para sa Header at Static Button */
+    .header-zone {
+      padding: 30px 20px 10px;
+      text-align: center;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      z-index: 10; /* Para laging nasa ibabaw */
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #333;
     }
 
     .btn {
       padding: 12px 24px;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.2s;
     }
 
     .btn-static {
@@ -37,8 +50,11 @@
       color: white;
     }
 
-    .btn-static:hover {
-      background-color: #45a049;
+    /* BABA: Playing zone para sa Dodging Button */
+    .play-zone {
+      flex: 1;
+      position: relative;
+      width: 100%;
     }
 
     .btn-dodge {
@@ -46,9 +62,11 @@
       background-color: #f44336;
       color: white;
       transition: all 0.15s ease-out;
+      white-space: nowrap;
+      touch-action: none; /* Pigilan ang scroll kapag tinatangkang i-tap sa CP */
     }
 
-    /* Modal Styling */
+    /* Pop-up Modal */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -64,15 +82,15 @@
 
     .modal-content {
       background: white;
-      padding: 30px;
+      padding: 25px;
       border-radius: 12px;
       text-align: center;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      max-width: 80%;
+      max-width: 85%;
     }
 
     .modal-content p {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
       color: #333;
       margin-bottom: 20px;
@@ -81,7 +99,7 @@
     .close-btn {
       background-color: #2196F3;
       color: white;
-      padding: 8px 16px;
+      padding: 10px 20px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
@@ -91,14 +109,18 @@
 </head>
 <body>
 
-  <h1>Kupal kaba jude?</h1>
-
-  <div class="container">
-    <button id="staticBtn" class="btn btn-static">ULOL!</button>
-    <button id="dodgeBtn" class="btn btn-dodge" style="top: 50%; left: 55%;">Diko</button>
+  <!-- SAFE ZONE: Hindi pwedeng pasukin ng dodging button -->
+  <div class="header-zone">
+    <h1>Kupal kaba jude???</h1>
+    <button id="staticBtn" class="btn btn-static">Dati</button>
   </div>
 
-  <!-- Pop-up Modal -->
+  <!-- PLAY ZONE: Dito lang pwedeng gumalaw ang dodging button -->
+  <div id="playZone" class="play-zone">
+    <button id="dodgeBtn" class="btn btn-dodge">Oulol</button>
+  </div>
+
+  <!-- Pop-up Modal Message -->
   <div id="messageModal" class="modal-overlay">
     <div class="modal-content">
       <p>Bitaw dong hulama ko 20k bi pang gas lang please</p>
@@ -108,16 +130,28 @@
 
   <script>
     const dodgeBtn = document.getElementById('dodgeBtn');
+    const playZone = document.getElementById('playZone');
     const staticBtn = document.getElementById('staticBtn');
     const messageModal = document.getElementById('messageModal');
     const closeBtn = document.getElementById('closeBtn');
 
-    // Dodging logic
-    function moveButton() {
-      const padding = 100;
-      const maxX = window.innerWidth - dodgeBtn.offsetWidth - padding;
-      const maxY = window.innerHeight - dodgeBtn.offsetHeight - padding;
+    // Ilagay ang dodging button sa gitna ng play-zone sa simula
+    function setInitialPosition() {
+      const zoneWidth = playZone.clientWidth;
+      const zoneHeight = playZone.clientHeight;
+      
+      dodgeBtn.style.left = `${(zoneWidth / 2) - (dodgeBtn.offsetWidth / 2)}px`;
+      dodgeBtn.style.top = `${(zoneHeight / 3)}px`;
+    }
 
+    function moveButton() {
+      const padding = 15;
+      
+      // Kunin ang eksaktong laki ng playZone lamang
+      const maxX = playZone.clientWidth - dodgeBtn.offsetWidth - padding;
+      const maxY = playZone.clientHeight - dodgeBtn.offsetHeight - padding;
+
+      // Mag-generate ng position sa LOOB LANG ng playZone
       const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
       const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
 
@@ -125,20 +159,26 @@
       dodgeBtn.style.top = `${randomY}px`;
     }
 
+    // Controls para sa Desktop at CP
     dodgeBtn.addEventListener('mouseover', moveButton);
+    dodgeBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault(); // Iwasan ang pag-scroll o pag-zoom kapag tinatangkang i-tap
+      moveButton();
+    });
     dodgeBtn.addEventListener('click', moveButton);
 
-    // Static button click handler to show message
+    // Show at Close Modal
     staticBtn.addEventListener('click', () => {
       messageModal.style.display = 'flex';
     });
 
-    // Close modal handler
     closeBtn.addEventListener('click', () => {
       messageModal.style.display = 'none';
     });
+
+    // Set-up paunang pwesto pagka-load
+    window.addEventListener('load', setInitialPosition);
   </script>
 
 </body>
 </html>
-
